@@ -1,4 +1,0 @@
----- RadioDriverInit Matches (3 in 3 files) ----
-Radio.c (hardware\sx1278\radio):tRadioDriver* RadioDriverInit( void )
-Radio.h (hardware\sx1278\radio):tRadioDriver* RadioDriverInit( void );
-Sys.c (system\sys):	Radio = RadioDriverInit( );

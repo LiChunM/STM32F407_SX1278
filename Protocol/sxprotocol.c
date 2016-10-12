@@ -278,6 +278,35 @@ void SXProtocolTimeDataInit(u8 *length)
 }
 
 
+void SXProtocolSubTimeDataInit(u8 *length)
+{
+	u8 i;
+	u16 crcdata;
+	u16 settime;
+	settime=systemset.HandInter/60;
+	SXProtocolBuf[2]=SXAddListInfo.IDList[CurrtWorkNum].mainid;
+	SXProtocolBuf[3]=(SXAddListInfo.IDList[CurrtWorkNum].subid&0xff00)>>8;
+	SXProtocolBuf[4]=SXAddListInfo.IDList[CurrtWorkNum].subid&0xff;
+	for(i=0;i<3;i++)SXProtocolBuf[5+i]=systemset.ID[i];
+	for(i=0;i<2;i++)SXProtocolBuf[8+i]=sxprotocolpackge.passwd[0+i];
+	SXProtocolBuf[10]=SXProtocoTIMEDATA;
+	SXProtocolBuf[11]=SXProtocoUPDATA;
+	for(i=0;i<3;i++)SXProtocolBuf[12+i]=0x00;
+	SXProtocolBuf[15]=SXProtocoBEDATA;
+	SXProtocolBuf[16]=(settime&0xff00)>>8;
+	SXProtocolBuf[17]=settime&0xff;
+	SXProtocolBuf[18]=SXProtocoENDDATA;
+	crcdata=SXProtoco_CRC16(SXProtocolBuf,19);
+	SXProtocolBuf[20]=(crcdata>>8);
+	SXProtocolBuf[21]=(crcdata&0xff);
+	SXProtocolBuf[22]=sxprotocolpackge.sxpackets_Send_end[0];
+	SXProtocolBuf[23]=sxprotocolpackge.sxpackets_Send_end[1];
+	*length=24;
+	
+}
+
+
+
 
 void SXProtocolSetRTCDataInit(u8 *length)
 {
