@@ -201,31 +201,37 @@ void main_task(void *pdata)
 			}
 		if(SystemFlow==1)
 			{
-				if()
-				if(systemset.workmode==0)
+				if(SXAddListInfo.IDList==0)
 					{
-M35RESET:
-						M35PowerOn();
-						m35_init();
-						mc35_gprs_init();
-						res=m35_tcpudp_conncet((u8)systemset.TCPorUDP,systemset.CenterIP,systemset.CenterPort,0);
-						if(res==0)IPCONNCET=SUCCESS;
-						else
-						{
-							IPCONNCET=0;
-							delay_ms(3000);
-							if(SystemDebug==2)printf("IP Conncet agine\r\n");
-							M35PowerOff();
-							delay_ms(6000);
-							goto M35RESET;
-						}
 						
 					}
-				if(systemset.workmode==1)
+				else
 					{
-						Calculate_Wakeup_Time();
+						if(systemset.workmode==0)
+							{
+M35RESET:
+								M35PowerOn();
+								m35_init();
+								mc35_gprs_init();
+								res=m35_tcpudp_conncet((u8)systemset.TCPorUDP,systemset.CenterIP,systemset.CenterPort,0);
+								if(res==0)IPCONNCET=SUCCESS;
+								else
+								{
+									IPCONNCET=0;
+									delay_ms(3000);
+									if(SystemDebug==2)printf("IP Conncet agine\r\n");
+									M35PowerOff();
+									delay_ms(6000);
+									goto M35RESET;
+								}
+								
+							}
+						if(systemset.workmode==1)
+							{
+								Calculate_Wakeup_Time();
+							}
+						SystemFlow=2;
 					}
-				SystemFlow=2;
 			}
 		
 	}
