@@ -6,6 +6,11 @@
 #include "protocol.h"
 #include "sx1276-LoRa.h"
 #include "w25qxx.h" 
+#include "adc.h"
+#include "sxprotocol.h"
+#include "sxdowndata.h"
+#include "usart.h"	
+
 
 u8 sxdatabuf[SINGNMAX];
 vu32 MyOSTime=0;
@@ -242,5 +247,204 @@ void HeaderWare_Init(void)
 	SX1276InitIo( );
 }
 
+
+
+
+void UserSysCommad(u8 *buf)
+{
+	u8 res;
+	u8 mybuf[10];
+	u8 tempbuf[20]={0};
+	u8 *p,*s;
+	u32 idall=0;
+	u32 value=0;
+	p=(u8*)strstr((const char*)buf,"$$debug 2");
+	if(p!=NULL)
+		{
+			SystemDebug=2;
+			printf("DEBUG_GSM_ON\r\n");
+		}
+	p=(u8*)strstr((const char*)buf,"$$debug 4");
+	if(p!=NULL)
+		{
+			SystemDebug=4;
+			printf("DEBUG_RS485_ON\r\n");
+		}
+	p=(u8*)strstr((const char*)buf,"$$debug 5");
+	if(p!=NULL)
+		{
+			SystemDebug=5;
+			printf("DEBUG_Protocol_ON\r\n");
+		}
+	p=(u8*)strstr((const char*)buf,"$$debug 0");
+	if(p!=NULL)
+		{
+			SystemDebug=0;
+			printf("DEBUG_OFF\r\n");
+		}
+	p=(u8*)strstr((const char *)buf,"$setip");
+	if(p!=NULL)
+		{
+			mymemset(systemset.CenterIP,0,sizeof(systemset.CenterIP));
+			Get_Str_Use(systemset.CenterIP,p);
+			sysset_save_para(&systemset);
+		    	printf("+IP %s\r\n",(u8*)systemset.CenterIP);
+		}
+	p=(u8*)strstr((const char *)buf,"$setpot");
+	if(p!=NULL)
+		{
+			mymemset(systemset.CenterPort,0,sizeof(systemset.CenterPort));
+			Get_Str_Use(systemset.CenterPort,p);
+			sysset_save_para(&systemset);
+			printf("+PORT %s\r\n",(u8*)systemset.CenterPort);
+
+		}
+	p=(u8*)strstr((const char *)buf,"$setapn");
+	if(p!=NULL)
+		{
+			mymemset(systemset.Centerapn,0,sizeof(systemset.Centerapn));
+			Get_Str_Use(systemset.Centerapn,p);
+			sysset_save_para(&systemset);
+		    	printf("+APN %s\r\n",(u8*)systemset.Centerapn);
+		}
+	p=(u8*)strstr((const char*)buf,"$sethnd");
+	if(p!=NULL)
+		{
+			mymemset(mybuf,0,sizeof(mybuf));
+			Get_Str_Use(mybuf,p);
+			systemset.HandInter=strtol((const char*)mybuf,NULL,10);
+			sysset_save_para(&systemset);
+			sxdownloaddata.sxtimeneedupdate=1;
+			jishih=0;
+			printf("+HAND %d\r\n",systemset.HandInter);
+		}
+	p=(u8*)strstr((const char *)buf,"$setsn");
+	if(p!=NULL)
+		{
+			mymemset(systemset.SN,0,sizeof(systemset.SN));
+			Get_Str_Use(systemset.SN,p);
+			sysset_save_para(&systemset);
+			printf("+SN %s\r\n",(u8*)systemset.SN);
+		}
+	p=(u8*)strstr((const char*)buf,"$info");
+	if(p!=NULL)
+		{
+			calendar_get_time(&calendar);
+			delay_ms(20);
+			calendar_get_date(&calendar);
+			printf("+time=%04d-%02d-%02d %02d:%02d:%02d\r\n",calendar.w_year,calendar.w_month,calendar.w_date,calendar.hour,calendar.min,calendar.sec);
+			printf("+SN %s\r\n",systemset.SN);
+			printf("+ip %s %s\r\n",systemset.CenterIP,systemset.CenterPort);
+			printf("+apn %s\r\n",systemset.Centerapn);
+			printf("+tcp-udp mode:%s\r\n",modetbl[systemset.TCPorUDP]);
+			printf("+hand %d\r\n",systemset.HandInter);
+			printf("+datamode %d\r\n",systemset.datamode);
+			printf("+jishih %d\r\n",jishih);
+			printf("+adcv %d\r\n",adcv/100,adcv%100);
+		
+		}
+	p=(u8*)strstr((const char *)buf,"$settime");
+	if(p!=NULL)
+		{
+			s=(u8*)strstr((const char *)buf,"-");
+			if(s!=NULL)
+				{
+					GetTime2Use(&calendar.w_year,&calendar.w_month,&calendar.w_date,&calendar.hour,&calendar.min,&calendar.sec,p);
+					RTC_Set(calendar.w_year,calendar.w_month,calendar.w_date,calendar.hour,calendar.min,calendar.sec);
+					printf("+time=%04d-%02d-%02d %02d:%02d:%02d\r\n",calendar.w_year,calendar.w_month,calendar.w_date,calendar.hour,calendar.min,calendar.sec);
+
+				}
+		}
+	p=(u8*)strstr((const char*)buf,"$reset");
+	if(p!=NULL)
+		{
+			if(SystemFlow==0)
+				{	
+					SystemFlow=1;
+					printf("+Reset Ok\r\n");
+				}
+			else
+				{
+					printf("+Reset Error\r\n");
+				}
+		}
+	p=(u8*)strstr((const char*)buf,"$tcp");
+	if(p!=NULL)
+		{
+			mymemset(mybuf,0,sizeof(mybuf));
+			Get_Str_Use(mybuf,p);
+			systemset.TCPorUDP=strtol((const char*)mybuf,NULL,10);
+			printf("+tcp-udp mode: %s\r\n",modetbl[systemset.TCPorUDP]);
+		}
+	p=(u8*)strstr((const char*)buf,"$setdelayt");
+	if(p!=NULL)
+		{
+			mymemset(mybuf,0,sizeof(mybuf));
+			Get_Str_Use(mybuf,p);
+			systemset.UserDelayTime=strtol((const char*)mybuf,NULL,10);
+			sysset_save_para(&systemset);
+			printf("+delaytime %d\r\n",systemset.UserDelayTime);
+		}
+
+	p=(u8*)strstr((const char*)buf,"$setdatamod");
+	if(p!=NULL)
+		{
+			mymemset(mybuf,0,sizeof(mybuf));
+			Get_Str_Use(mybuf,p);
+			systemset.datamode=strtol((const char*)mybuf,NULL,10);
+			sysset_save_para(&systemset);
+			printf("+datamode %d\r\n",systemset.datamode);
+		}
+	
+	p=(u8*)strstr((const char*)buf,"$setworkmod");
+	if(p!=NULL)
+		{
+			mymemset(mybuf,0,sizeof(mybuf));
+			Get_Str_Use(mybuf,p);
+			systemset.workmode=strtol((const char*)mybuf,NULL,10);
+			sysset_save_para(&systemset);
+			printf("+workmode %d\r\n",systemset.workmode);
+		}
+	s=(u8*)strstr((const char*)buf,"$setcenterid");
+	if(s!=NULL)
+		{
+			mymemset(mybuf,0,sizeof(mybuf));
+			Get_Str_Use(mybuf,s);
+			idall=strtol((const char*)mybuf,NULL,16);
+			sxprotocolpackge.sxrotocoladdr.sxpacketspreaddr[0]=(idall&0xff0000)>>16;
+			sxprotocolpackge.sxrotocoladdr.sxpacketspreaddr[1]=(idall&0xff00)>>8;
+			sxprotocolpackge.sxrotocoladdr.sxpacketspreaddr[2]=idall&0xff;
+			systemset.ID[0]=sxprotocolpackge.sxrotocoladdr.sxpacketspreaddr[0];
+			systemset.ID[1]=sxprotocolpackge.sxrotocoladdr.sxpacketspreaddr[1];
+			systemset.ID[2]=sxprotocolpackge.sxrotocoladdr.sxpacketspreaddr[2];
+			sysset_save_para(&systemset);
+			printf("+setcenterid ok\r\n");
+		}
+	
+	s=(u8*)strstr((const char*)buf,"$setsxsenid");
+	if(s!=NULL)
+		{
+			mymemset(mybuf,0,sizeof(mybuf));
+			Get_Str_Use(mybuf,s);
+			idall=strtol((const char*)mybuf,NULL,16);
+			res=(idall&0xff0000)>>16;
+			AddSensorIDList(res,idall&0xffff);
+			
+		}
+
+	s=(u8*)strstr((const char*)buf,"$clearsxsenid");
+	if(s!=NULL)
+		{
+			sxsensoridinit();
+			printf("+clearsxsenid ok\r\n");
+		}
+	
+	s=(u8*)strstr((const char*)buf,"$setm35on");
+	if(s!=NULL)
+		{
+			systeminfo.SystemFlow=3;
+			printf("+setm35on\r\n");
+		}
+}
 
 

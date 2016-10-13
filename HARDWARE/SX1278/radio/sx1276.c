@@ -305,3 +305,245 @@ uint32_t SX1276Process( void )
     }
 }
 
+
+
+void SX1276UsartAys(u8 *buf)
+{
+	u8 *pa,res=0;
+	u32 idall=0;
+	u32 value=0;
+	u8 mybuf[10];
+	u8 tempbuf[20]={0};
+	pa=(u8*)strstr((const char *)buf,"AT++");
+	if(pa!=NULL)
+		{
+			printf("\r\n");
+			printf("AT+SXBDATE\r\n");
+			printf("AT+SXPAR\r\n");
+			printf("AT+SXRFRFE\r\n");
+			printf("AT+SXRFMODE\r\n");
+			printf("AT+SXRFFAC\r\n");
+			printf("AT+SXRFBW\r\n");
+			printf("AT+SXCTID\r\n");
+			printf("AT+SXNETID\r\n");
+			printf("AT+SXPOWER\r\n");
+			printf("\r\n+OK\r\n");
+		}
+	pa=(u8*)strstr((const char *)buf,"AT+SXBDATE");
+	if(pa!=NULL)
+		{
+			pa=(u8*)strstr((const char *)buf,"AT+SXBDATE?");
+			if(pa!=NULL)
+				{
+					printf("\r\n");
+					printf("+SXBDATE:%d\r\n",sx1278data.modulepata.bdate);
+					printf("\r\n+OK\r\n");
+				}
+			pa=(u8*)strstr((const char *)buf,"AT+SXBDATE=");
+			if(pa!=NULL)
+				{
+					Get_Str_Use2(tempbuf,buf);
+					value=strtol((const char*)tempbuf,NULL,10);
+					res=Is_Error_db(value);
+					if(res)
+						{
+							sx1278data.modulepata.bdate=value;
+							sx1278data_save_para(&sx1278data);
+							printf("\r\n");
+							printf("\r\n+OK\r\n");
+						}
+					else
+						{
+							printf("\r\n");
+							printf("\r\n+ERROR\r\n");
+						}
+				}
+		}
+	pa=(u8*)strstr((const char *)buf,"AT+SXPAR");
+	if(pa!=NULL)
+		{
+			pa=(u8*)strstr((const char *)buf,"AT+SXPAR?");
+			if(pa!=NULL)
+				{
+					printf("\r\n");
+					printf("+SXPAR:%d\r\n",sx1278data.modulepata.parity);
+					printf("\r\n+OK\r\n");
+				}
+			pa=(u8*)strstr((const char *)buf,"AT+SXPAR=");
+			if(pa!=NULL)
+				{
+					Get_Str_Use2(tempbuf,buf);
+					value=strtol((const char*)tempbuf,NULL,10);
+					res=Is_Error_pt(value);
+					if(res)
+						{
+							sx1278data.modulepata.parity=value;
+							sx1278data_save_para(&sx1278data);
+							printf("\r\n");
+							printf("\r\n+OK\r\n");
+						}
+					else
+						{
+							printf("\r\n");
+							printf("\r\n+ERROR\r\n");
+						}
+				}
+		}
+	pa=(u8*)strstr((const char *)buf,"AT+SXRFRFE");
+	if(pa!=NULL)
+		{
+			pa=(u8*)strstr((const char *)buf,"AT+SXRFRFE?");
+			if(pa!=NULL)
+				{
+					printf("\r\n");
+					printf("+SXRFRFE:%d\r\n",sx1278data.modulepata.rffrequency);
+					printf("\r\n+OK\r\n");
+				}
+			pa=(u8*)strstr((const char *)buf,"AT+SXRFRFE=");
+			if(pa!=NULL)
+				{
+					Get_Str_Use2(tempbuf,buf);
+					value=strtol((const char*)tempbuf,NULL,10);
+					res=Is_Error_fre(value);
+					if(res)
+						{
+							sx1278data.modulepata.rffrequency=value;
+							sx1278data_save_para(&sx1278data);
+							printf("\r\n");
+							printf("\r\n+OK\r\n");
+						}
+					else
+						{
+							printf("\r\n");
+							printf("\r\n+ERROR\r\n");
+						}
+				}
+		}
+	pa=(u8*)strstr((const char *)buf,"AT+SXRFMODE");
+	if(pa!=NULL)
+		{
+			pa=(u8*)strstr((const char *)buf,"AT+SXRFMODE?");
+			if(pa!=NULL)
+				{
+					printf("\r\n");
+					printf("+SXRFMODE:%d\r\n",sx1278data.modulepata.rfmode);
+					printf("\r\n+OK\r\n");
+				}
+			pa=(u8*)strstr((const char *)buf,"AT+SXRFMODE=");
+			if(pa!=NULL)
+				{
+					Get_Str_Use2(tempbuf,buf);
+					value=strtol((const char*)tempbuf,NULL,10);
+					res=Is_Error_mode(value);
+					if(res)
+						{
+							sx1278data.modulepata.rfmode=value;
+							sx1278data_save_para(&sx1278data);
+							printf("\r\n");
+							printf("\r\n+OK\r\n");
+						}
+					else
+						{
+							printf("\r\n");
+							printf("\r\n+ERROR\r\n");
+						}
+				}
+		}
+	pa=(u8*)strstr((const char *)buf,"AT+SXRFFAC");
+	if(pa!=NULL)
+		{
+			pa=(u8*)strstr((const char *)buf,"AT+SXRFFAC?");
+			if(pa!=NULL)
+				{
+					printf("\r\n");
+					printf("+SXRFFAC:%d\r\n",sx1278data.modulepata.rffactor);
+					printf("\r\n+OK\r\n");
+				}
+			pa=(u8*)strstr((const char *)buf,"AT+SXRFFAC=");
+			if(pa!=NULL)
+				{
+					Get_Str_Use2(tempbuf,buf);
+					value=strtol((const char*)tempbuf,NULL,10);
+					res=Is_Error_fac(value);
+					if(res)
+						{
+							sx1278data.modulepata.rffactor=value;
+							sx1278data_save_para(&sx1278data);
+							printf("\r\n");
+							printf("\r\n+OK\r\n");
+						}
+					else
+						{
+							printf("\r\n");
+							printf("\r\n+ERROR\r\n");
+						}
+				}
+		}
+	pa=(u8*)strstr((const char *)buf,"AT+SXRFBW");
+	if(pa!=NULL)
+		{
+			pa=(u8*)strstr((const char *)buf,"AT+SXRFBW?");
+			if(pa!=NULL)
+				{
+					printf("\r\n");
+					printf("+SXRFBW:%d\r\n",sx1278data.modulepata.rfbw);
+					printf("\r\n+OK\r\n");
+				}
+			pa=(u8*)strstr((const char *)buf,"AT+SXRFBW=");
+			if(pa!=NULL)
+				{
+					Get_Str_Use2(tempbuf,buf);
+					value=strtol((const char*)tempbuf,NULL,10);
+					res=Is_Error_bw(value);
+					if(res)
+						{
+							sx1278data.modulepata.rfbw=value;
+							sx1278data_save_para(&sx1278data);
+							printf("\r\n");
+							printf("\r\n+OK\r\n");
+						}
+					else
+						{
+							printf("\r\n");
+							printf("\r\n+ERROR\r\n");
+						}
+				}
+		}
+	pa=(u8*)strstr((const char *)buf,"AT+SXRFPOWER");
+	if(pa!=NULL)
+		{
+			pa=(u8*)strstr((const char *)buf,"AT+SXRFPOWER?");
+			if(pa!=NULL)
+				{
+					printf("\r\n");
+					printf("+SXRFPOWER:%d\r\n",sx1278data.modulepata.rfpower);
+					printf("\r\n+OK\r\n");
+				}
+			pa=(u8*)strstr((const char *)buf,"AT+SXRFPOWER=");
+			if(pa!=NULL)
+				{
+					Get_Str_Use2(tempbuf,buf);
+					value=strtol((const char*)tempbuf,NULL,10);
+					res=Is_Error_rfpower(value);
+					if(res)
+						{
+							sx1278data.modulepata.rfpower=value;
+							sx1278data_save_para(&sx1278data);
+							printf("\r\n");
+							printf("\r\n+OK\r\n");
+						}
+					else
+						{
+							printf("\r\n");
+							printf("\r\n+ERROR\r\n");
+						}
+				}
+		}
+	pa=(u8*)strstr((const char *)buf,"AT+SXRFCSQ?");
+	if(pa!=NULL)
+		{
+			printf("\r\n");
+			printf("+SXRFCSQ:-%d\r\n",SX1276LoRaReadRssiChar());
+			printf("\r\n+OK\r\n");
+		}
+}

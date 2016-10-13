@@ -140,6 +140,7 @@ void SX1278_Parameter_Init(void);
 void HeaderWare_Init(void);
 void syssetfamen_read_para(FMIDList * sysset);
 void syssetfamen_save_para(FMIDList * sysset);
+void UserSysCommad(u8 *buf);
 #endif
 
 

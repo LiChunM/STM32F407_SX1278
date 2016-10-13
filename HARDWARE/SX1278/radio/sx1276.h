@@ -184,4 +184,7 @@ void SX1276SetRFState( uint8_t state );
  */
 uint32_t SX1276Process( void );
 
+
+void SX1276UsartAys(u8 *buf);
+
 #endif //__SX1276_H__
