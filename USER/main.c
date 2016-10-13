@@ -152,6 +152,7 @@ void led_task(void *pdata)
 	while(1)
 	{
 		delay_ms(1000);
+		if(IPCONNCET==SUCCESS)SysCheckSVAsk();
 	}									 
 }
 
@@ -203,13 +204,11 @@ void main_task(void *pdata)
 			{
 				if(SXAddListInfo.IDList==0)
 					{
-						
-					}
-				else
-					{
-						if(systemset.workmode==0)
+						printf("Sensor ID Is NULL!!!\r\n");
+						printf("Need to Update From Center!\r\n");
+						if(IPCONNCET==ERROR)
 							{
-M35RESET:
+M35RESETPRO:
 								M35PowerOn();
 								m35_init();
 								mc35_gprs_init();
@@ -217,13 +216,40 @@ M35RESET:
 								if(res==0)IPCONNCET=SUCCESS;
 								else
 								{
-									IPCONNCET=0;
+									IPCONNCET=ERROR;
 									delay_ms(3000);
 									if(SystemDebug==2)printf("IP Conncet agine\r\n");
 									M35PowerOff();
 									delay_ms(6000);
-									goto M35RESET;
+									goto M35RESETPRO;
 								}
+								
+							}
+						SystemFlow=0xF1;
+						
+					}
+				else
+					{
+						if(systemset.workmode==0)
+							{
+M35RESET:
+								if(IPCONNCET==ERROR)
+									{
+										M35PowerOn();
+										m35_init();
+										mc35_gprs_init();
+										res=m35_tcpudp_conncet((u8)systemset.TCPorUDP,systemset.CenterIP,systemset.CenterPort,0);
+										if(res==0)IPCONNCET=SUCCESS;
+										else
+										{
+											IPCONNCET=ERROR;
+											delay_ms(3000);
+											if(SystemDebug==2)printf("IP Conncet agine\r\n");
+											M35PowerOff();
+											delay_ms(6000);
+											goto M35RESET;
+										}
+									}
 								
 							}
 						if(systemset.workmode==1)
@@ -241,7 +267,7 @@ M35RESET:
 void rs485one_task(void *pdata)
 {	
 	u8 res;
-	u8 time=0;
+	u16 time=0;
 	u8 length;
 	while(1)
 	{
@@ -289,6 +315,33 @@ void rs485one_task(void *pdata)
 									}
 							}
 					}
+			}
+		if(SystemFlow==0xF1) //repoce sensor id code
+			{
+REPITCODE:
+				Send_InitHandData(&length);
+				res=M35SendDataNoAck(ProtocolBuf,length,0);
+				if(res)
+					{
+						IPCONNCET=ERROR;
+						SystemFlow=1;
+					}
+				else
+					{
+						while(SXAddListInfo.ListNum==0)
+							{
+								delay_ms(10);
+								time++;
+								if(time>=500)
+									{
+										time=0;
+										goto REPITCODE;
+									}
+							}
+						
+					}
+				SystemFlow=1;
+				
 			}
 		
 	}
