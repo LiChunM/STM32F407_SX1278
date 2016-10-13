@@ -162,7 +162,7 @@ void touch_task(void *pdata)
 		delay_ms(10);
 		Usart1CommandAnalysis();
 		if(IPCONNCET==SUCCESS)Usart6CommandAnalysis();
-		
+		Update_SysVol();		
 	}
 }     
 
