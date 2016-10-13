@@ -202,9 +202,10 @@ void main_task(void *pdata)
 			}
 		if(SystemFlow==1)
 			{
-				if(SXAddListInfo.IDList==0)
+				if(SXAddListInfo.ListNum==0)
 					{
-						printf("Sensor ID Is NULL!!!\r\n");
+						delay_ms(1000);
+						printf("\r\nSensor ID Is NULL!!!\r\n");
 						printf("Need to Update From Center!\r\n");
 						if(IPCONNCET==ERROR)
 							{
@@ -230,6 +231,7 @@ M35RESETPRO:
 					}
 				else
 					{
+						printf("Normal Work Begin.....\r\n");
 						if(systemset.workmode==0)
 							{
 M35RESET:

@@ -36,7 +36,7 @@
 
 
 
-#define SVSYN			17
+#define SVSYN			0x17
 #define SVSTX			0x12
 #define SVESC			0x1B
 #define SVEOT			0x04

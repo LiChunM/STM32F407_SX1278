@@ -67,7 +67,7 @@ void  Send_InitHandData(u8 *sendlength)
 
 void  Send_InitRtcData(u8 *sendlength)
 {
-	
+	*sendlength=10;
 }
 
 /*7E7E   00 00 00  0000  A0 10 00 00 11 12 00 01 16 08 24 15 59 54 01 01 
@@ -373,6 +373,13 @@ static u8 SV_AnysWaveData(u8 *databuf)
 }
 
 /***********************************************************************/
+
+/*校时数据*/
+/*7E 7E 01 01 FF 12 34 4A 10 00 00 06 12 00 01 16 10 13 17 42 00 16 10 13 17 42 10 1B 1E 2D*/
+
+/*注册sensor id*/
+/*7E 7E 01 01 FF 12 34 3D 10 00 00 06 12 00 01 16 10 13 17 42 00  10 02 08 10 02 09 04 1E 2D*/ /*不分包*/
+
 
 
 void DataCore(u8 *databuf,u8 *res)
