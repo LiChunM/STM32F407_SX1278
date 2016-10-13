@@ -422,6 +422,7 @@ void User_Command_Analysis(u8 *buf)
 			printf("+hand %d\r\n",systemset.HandInter);
 			printf("+datamode %d\r\n",systemset.datamode);
 			printf("+jishih %d\r\n",jishih);
+			printf("+adcv %d\r\n",adcv/100,adcv%100);
 		
 		}
 	p=(u8*)strstr((const char *)buf,"$settime");

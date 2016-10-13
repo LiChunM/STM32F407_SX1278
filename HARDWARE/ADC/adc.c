@@ -1,6 +1,6 @@
 #include "adc.h"
 #include "delay.h"		 
-
+#include "usart.h"
 
 volatile u16 adcv=0;
 void  Adc_Init(void)
@@ -9,14 +9,14 @@ void  Adc_Init(void)
 	ADC_CommonInitTypeDef ADC_CommonInitStructure;
 	ADC_InitTypeDef       ADC_InitStructure;
 	
-  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);//使能GPIOA时钟
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);//使能GPIOA时钟
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE); //使能ADC1时钟
 
   //先初始化ADC1通道5 IO口
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;//PA5 通道5
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;//PA5 通道5
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;//模拟输入
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;//不带上下拉
-  GPIO_Init(GPIOC, &GPIO_InitStructure);//初始化  
+  GPIO_Init(GPIOA, &GPIO_InitStructure);//初始化  
  
    RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC1,ENABLE);	  //ADC1复位
 	RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC1,DISABLE);	//复位结束	 
@@ -72,9 +72,14 @@ u16 Get_Adc_Average(u8 ch,u8 times)
 } 
 	 
 
-void Update_SysVol()
+void Update_SysVol(void)
 {
 	
+	u16 adcx;
+	float temp;
+	adcx=Get_Adc_Average(ADC_Channel_3,3);
+	temp=(float)adcx*(3.3*4.3/4096);
+	adcv=(u16)(temp*100);
 }
 
 

@@ -119,6 +119,7 @@ int main(void)
 	rs485Init(sx1278data.modulepata.bdate);
 	My_RTC_Init();
 	UserdataInit();
+	Adc_Init();
 	OSInit();  	 	
   	OSTaskCreate(start_task,(void *)0,(OS_STK *)&START_TASK_STK[START_STK_SIZE-1],START_TASK_PRIO );//创建起始任务
 	OSStart();	    

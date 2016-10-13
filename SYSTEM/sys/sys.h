@@ -104,7 +104,6 @@ __packed typedef struct
 	u8 datamode;
 	u8 workmode;
 	u8 ID[3];
-	u16 sysvol;
 	u8 saveflag;		
 }_system_setings;
 

@@ -6,6 +6,7 @@
 #include "protocol.h"
 #include "rtc.h"
 #include "string.h"
+#include "adc.h"
 
 u8 ProtocolBuf[ProtocoMaxLen];
 
@@ -181,8 +182,8 @@ void  Send_InitMasterData(u8 *sendlength,u8 packall,u8 packge,u8 subsensornum)
 			
 		}
 	ProtocolBuf[47+EVESUBINFO*(i-1)]=0xEF;
-	ProtocolBuf[48+EVESUBINFO*(i-1)]=(systemset.sysvol&0xff00)>>8;
-	ProtocolBuf[49+EVESUBINFO*(i-1)]=systemset.sysvol&0xff;
+	ProtocolBuf[48+EVESUBINFO*(i-1)]=(adcv&0xff00)>>8;
+	ProtocolBuf[49+EVESUBINFO*(i-1)]=adcv&0xff;
 	if(packall==packge)ProtocolBuf[50+EVESUBINFO*(i-1)]=0x03;
 	else	ProtocolBuf[50+EVESUBINFO*(i-1)]=0x17;
 	crcdata=SXProtoco_CRC16(ProtocolBuf,51+EVESUBINFO*(i-1));
