@@ -425,40 +425,48 @@ u8 M35InitForTheData(void)
 
 void DingTimeSendForData(void)
 {
-	u8 k,res;
+	u8 k,res=0;
 	u8 i,j;
 	u8 length;
-	i=SXAddListInfo.ListNum/EVEPACGE;
-	j=SXAddListInfo.ListNum%EVEPACGE;
-	if(j==0)
+
+	if(SXAddListInfo.ListNum==0)
 		{
-			for(k=1;k<i+1;k++)
-				{
-					Send_InitMasterData(&length,i,k,EVEPACGE);
-					res=M35SendDataNoAck(ProtocolBuf,length,0);
-					if(res)break;
-					else
-						{
-							res=M35SendDataCheckOK(500);
-							if(res)break;
-						}
-				}
+			
 		}
 	else
 		{
-			for(k=1;k<i+2;k++)
+			i=SXAddListInfo.ListNum/EVEPACGE;
+			j=SXAddListInfo.ListNum%EVEPACGE;
+			if(j==0)
 				{
-					Send_InitMasterData(&length,i+1,k,j);
-					res=M35SendDataNoAck(ProtocolBuf,length,0);
-					if(res)break;
-					else
+					for(k=1;k<i+1;k++)
 						{
-							res=M35SendDataCheckOK(500);
+							Send_InitMasterData(&length,i,k,EVEPACGE);
+							res=M35SendDataNoAck(ProtocolBuf,length,0);
 							if(res)break;
+							else
+								{
+									res=M35SendDataCheckOK(500);
+									if(res)break;
+								}
 						}
 				}
+			else
+				{
+					for(k=1;k<i+2;k++)
+						{
+							Send_InitMasterData(&length,i+1,k,j);
+							res=M35SendDataNoAck(ProtocolBuf,length,0);
+							if(res)break;
+							else
+								{
+									res=M35SendDataCheckOK(500);
+									if(res)break;
+								}
+						}
+				}
+			if(res)SystemFlow=1;
 		}
-	if(res)SystemFlow=1;
 	
 }
 

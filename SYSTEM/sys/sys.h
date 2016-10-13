@@ -94,7 +94,8 @@ extern volatile u8 CHECK_END_BITE;
 
 __packed typedef struct 
 {
-	u16 HandInter;		
+	u16 HandInter;
+	u16 ATime[3];
 	u8 CenterIP[16];					
 	u8 CenterPort[6];
 	u8 Centerapn[12];		

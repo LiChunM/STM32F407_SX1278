@@ -193,7 +193,7 @@ void main_task(void *pdata)
 		if(SystemFlow==0)
 			{
 				j++;
-				if(j==20000)
+				if(j>=20000)
 				{
 					SystemFlow=1;
 					j=0;
@@ -201,6 +201,7 @@ void main_task(void *pdata)
 			}
 		if(SystemFlow==1)
 			{
+				if()
 				if(systemset.workmode==0)
 					{
 M35RESET:
@@ -255,11 +256,18 @@ void rs485one_task(void *pdata)
 							}
 						if(systemset.workmode==0)
 							{
-								jishih++;
-								if(jishih==(systemset.HandInter*50))
+								if(SXAddListInfo.ListNum==0)
 									{
-										jishih=0;
-										NeedForRtuTheData=1;
+										
+									}
+								else
+									{
+										jishih++;
+										if(jishih==(systemset.HandInter*50))
+											{
+												jishih=0;
+												NeedForRtuTheData=1;
+											}
 									}
 							}
 						if(CHECK_END_BITE==1)

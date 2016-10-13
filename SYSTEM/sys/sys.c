@@ -155,7 +155,10 @@ void 	SYS_Parameter_Init(void)
 	sysset_read_para(&systemset);
 	if(systemset.saveflag!=0X0A)
 		{
-			systemset.HandInter=100;
+			systemset.HandInter=60;
+			systemset.ATime[0]=180;
+			systemset.ATime[1]=30;
+			systemset.ATime[2]=30;
 			sprintf((char*)systemset.CenterIP,"192.168.1.100");
 			sprintf((char*)systemset.CenterPort,"8888");
 			sprintf((char*)systemset.SN,"000000000");
@@ -326,7 +329,7 @@ void UserSysCommad(u8 *buf)
 			sysset_save_para(&systemset);
 			printf("+SN %s\r\n",(u8*)systemset.SN);
 		}
-	p=(u8*)strstr((const char*)buf,"$info");
+	p=(u8*)strstr((const char*)buf,"$setinfo");
 	if(p!=NULL)
 		{
 			calendar_get_time(&calendar);
@@ -341,6 +344,26 @@ void UserSysCommad(u8 *buf)
 			printf("+datamode %d\r\n",systemset.datamode);
 			printf("+jishih %d\r\n",jishih);
 			printf("+adcv %d\r\n",adcv/100,adcv%100);
+		
+		}
+	p=(u8*)strstr((const char*)buf,"$info-all");
+	if(p!=NULL)
+		{
+			calendar_get_time(&calendar);
+			delay_ms(20);
+			calendar_get_date(&calendar);
+			printf("+time=%04d-%02d-%02d %02d:%02d:%02d\r\n",calendar.w_year,calendar.w_month,calendar.w_date,calendar.hour,calendar.min,calendar.sec);
+			printf("+SN %s\r\n",systemset.SN);
+			printf("+ip %s %s\r\n",systemset.CenterIP,systemset.CenterPort);
+			printf("+apn %s\r\n",systemset.Centerapn);
+			printf("+tcp-udp mode:%s\r\n",modetbl[systemset.TCPorUDP]);
+			printf("+hand %d\r\n",systemset.HandInter);
+			printf("+datamode %d\r\n",systemset.datamode);
+			printf("+jishih %d\r\n",jishih);
+			printf("+adcv %d\r\n",adcv/100,adcv%100);
+			printf("+ATime[0] %d\r\n",systemset.ATime[0]);
+			printf("+ATime[1] %d\r\n",systemset.ATime[1]);
+			printf("+ATime[2] %d\r\n",systemset.ATime[2]);
 		
 		}
 	p=(u8*)strstr((const char *)buf,"$settime");
@@ -444,6 +467,28 @@ void UserSysCommad(u8 *buf)
 		{
 			systeminfo.SystemFlow=3;
 			printf("+setm35on\r\n");
+		}
+	s=(u8*)strstr((const char*)buf,"$setslwkt");
+	if(s!=NULL)
+		{
+			mymemset(mybuf,0,sizeof(mybuf));
+			Get_Str_Use(mybuf,s);
+			idall=strtol((const char*)mybuf,NULL,16);
+			systemset.HandInter=(idall>>16)&0xffff;
+			systemset.ATime[0]=idall&0xffff;
+			sysset_save_para(&systemset);
+			printf("+setslwkt ok\r\n");
+		}
+	s=(u8*)strstr((const char*)buf,"$setwkslet");
+	if(s!=NULL)
+		{
+			mymemset(mybuf,0,sizeof(mybuf));
+			Get_Str_Use(mybuf,s);
+			idall=strtol((const char*)mybuf,NULL,16);
+			systemset.ATime[1]=(idall>>16)&0xffff;
+			systemset.ATime[2]=idall&0xffff;
+			sysset_save_para(&systemset);
+			printf("+setwkslet ok\r\n");
 		}
 }
 
