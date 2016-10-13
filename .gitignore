@@ -1,0 +1,31 @@
+SI/*
+OBJ/*
+# Object files
+*.orig
+*.o
+*.ko
+*.obj
+*.elf
+*.pp
+*.cout
+*.pbi
+*.pbi.cout
+*.dep
+*.dni
+*.dbgdt
+*.bat
+*.wspos
+*.wsdt
+*.tmp
+*.tmp.c
+*.orig
+# Libraries
+*.lib
+
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+#gitignore
