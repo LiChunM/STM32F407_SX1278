@@ -45,29 +45,46 @@ void  Send_InitHandData(u8 *sendlength)
 {
 	u8 i;
 	u16 crcdata;
-	u32 length=0x11;
+	u32 length=0x01;
 	ProtocolBuf[0]=0x7E;
 	ProtocolBuf[1]=0x7E;
-	for(i=0;i<4;i++)ProtocolBuf[2+i]=Send_packets.centeraddr[i];
-	for(i=0;i<2;i++)ProtocolBuf[6+i]=Send_packets.subsensoraddr[i];
-	for(i=0;i<2;i++)ProtocolBuf[8+i]=Send_packets.passwd[i];
-	ProtocolBuf[10]=SXProtocoHANDATA;
-	ProtocolBuf[11]=SXProtocoDOWNDATA;
-	ProtocolBuf[12]=(length&0xff0000)>>16;
-	ProtocolBuf[13]=(length&0xff00)>>8;
-	ProtocolBuf[14]=length&0xff;
-	ProtocolBuf[15]=SXProtocoBEDATA;
-	ProtocolBuf[16]=SXProtocoENDDATA;
-	crcdata=SXProtoco_CRC16(ProtocolBuf,17);
-	ProtocolBuf[17]=(crcdata>>8);
-	ProtocolBuf[18]=(crcdata&0xff);
-	*sendlength=19;
+	for(i=0;i<3;i++)ProtocolBuf[2+i]=systemset.ID[i];
+	for(i=0;i<2;i++)ProtocolBuf[5+i]=Send_packets.passwd[i];
+	ProtocolBuf[7]=SXProtocoHANDATA;
+	ProtocolBuf[8]=SXProtocoDOWNDATA;
+	ProtocolBuf[9]=(length&0xff0000)>>16;
+	ProtocolBuf[10]=(length&0xff00)>>8;
+	ProtocolBuf[11]=length&0xff;
+	ProtocolBuf[12]=SXProtocoBEDATA;
+	ProtocolBuf[13]=SXProtocoENDDATA;
+	crcdata=SXProtoco_CRC16(ProtocolBuf,14);
+	ProtocolBuf[14]=(crcdata>>8);
+	ProtocolBuf[15]=(crcdata&0xff);
+	*sendlength=16;
 	
 }
 
-void  Send_InitRtcData(u8 *sendlength)
+
+void  Send_InitRtcData(u8 *sendlength,u8 Func)
 {
-	*sendlength=10;
+	u8 i;
+	u16 crcdata;
+	u32 length=0x01;
+	ProtocolBuf[0]=0x7E;
+	ProtocolBuf[1]=0x7E;
+	for(i=0;i<3;i++)ProtocolBuf[2+i]=systemset.ID[i];
+	for(i=0;i<2;i++)ProtocolBuf[5+i]=Send_packets.passwd[i];
+	ProtocolBuf[7]=Func;
+	ProtocolBuf[8]=SXProtocoDOWNDATA;
+	ProtocolBuf[9]=(length&0xff0000)>>16;
+	ProtocolBuf[10]=(length&0xff00)>>8;
+	ProtocolBuf[11]=length&0xff;
+	ProtocolBuf[12]=SXProtocoBEDATA;
+	ProtocolBuf[13]=SXProtocoENDDATA;
+	crcdata=SXProtoco_CRC16(ProtocolBuf,14);
+	ProtocolBuf[14]=(crcdata>>8);
+	ProtocolBuf[15]=(crcdata&0xff);
+	*sendlength=16;
 }
 
 /*7E7E   00 00 00  0000  A0 10 00 00 11 12 00 01 16 08 24 15 59 54 01 01 
@@ -380,6 +397,14 @@ static u8 SV_AnysWaveData(u8 *databuf)
 /*注册sensor id*/
 /*7E 7E 01 01 FF 12 34 3D 10 00 00 06 12 00 01 16 10 13 17 42 00  10 02 08 10 02 09 04 1E 2D*/ /*不分包*/
 
+/*删除sensor id*/
+
+/*7E 7E  01 01 FF 12 34 3E 10 00 00 01 12 00 01 16 10 13 17 42 00 FF 04 FF FF*/
+
+/*删除指定sensor id*/
+
+/*7E 7E  01 01 FF 12 34 3E 10 00 00 06 12 00 01 16 10 13 17 42 00 10 02 08 10 02 09 04 FF FF*/
+
 
 
 void DataCore(u8 *databuf,u8 *res)
@@ -389,6 +414,8 @@ void DataCore(u8 *databuf,u8 *res)
 			systemset.ID[0]=databuf[4];
 			systemset.ID[1]=databuf[2];
 			systemset.ID[2]=databuf[3];
+			Send_packets.passwd[0]=databuf[9];
+			Send_packets.passwd[1]=databuf[10];
 			 switch (databuf[7])
 			 	{
 			 		case SVHANDAT:
@@ -446,7 +473,7 @@ void SysCheckSVAsk(void)
 	if(ProtocolFunc&0x02)
 		{
 			ProtocolFunc&=~(1<<1);
-			Send_InitRtcData(&length);
+			Send_InitRtcData(&length,SVSETRTC);
 			M35SendDataNoAck(ProtocolBuf,length,0);
 		}
 	if(ProtocolFunc&0x04)
@@ -462,12 +489,14 @@ void SysCheckSVAsk(void)
 	if(ProtocolFunc&0x10)
 		{
 			ProtocolFunc&=~(1<<4);
-			Send_InitRtcData(&length);
+			Send_InitRtcData(&length,SVREGSUBID);
 			M35SendDataNoAck(ProtocolBuf,length,0);
 		}
 	if(ProtocolFunc&0x20)
 		{
 			ProtocolFunc&=~(1<<5);
+			Send_InitRtcData(&length,SVREGDLLID);
+			M35SendDataNoAck(ProtocolBuf,length,0);
 			
 		}
 	if(ProtocolFunc&0x40)
@@ -476,13 +505,13 @@ void SysCheckSVAsk(void)
 			if(ProtocoWave&0x01)
 				{
 					ProtocoWave&=~(1<<0);
-					Send_InitRtcData(&length);
+					Send_InitRtcData(&length,SVWAVEREG);
 					M35SendDataNoAck(ProtocolBuf,length,0);
 				}
 			if(ProtocoWave&0x02)
 				{
 					ProtocoWave&=~(1<<1);
-					Send_InitRtcData(&length);
+					Send_InitRtcData(&length,SVWAVEDLLREG);
 					M35SendDataNoAck(ProtocolBuf,length,0);
 				}
 			if(ProtocoWave&0x04)
@@ -490,8 +519,6 @@ void SysCheckSVAsk(void)
 					ProtocoWave&=~(1<<2);
 					Send_WaveChdata();
 					Re_WaveChata(100);
-					Send_InitRtcData(&length);
-					M35SendDataNoAck(ProtocolBuf,length,0);
 				}
 		}
 	

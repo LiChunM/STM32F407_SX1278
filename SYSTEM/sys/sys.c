@@ -397,6 +397,7 @@ void UserSysCommad(u8 *buf)
 			mymemset(mybuf,0,sizeof(mybuf));
 			Get_Str_Use(mybuf,p);
 			systemset.TCPorUDP=strtol((const char*)mybuf,NULL,10);
+			sysset_save_para(&systemset);
 			printf("+tcp-udp mode: %s\r\n",modetbl[systemset.TCPorUDP]);
 		}
 	p=(u8*)strstr((const char*)buf,"$setdelayt");

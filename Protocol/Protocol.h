@@ -28,7 +28,7 @@
 
 #define SVSETRTC		0x4A
 #define SVHANDAT		0x3f
-#define SVECHECK		14
+#define SVECHECK		0x14
 #define SVREDAOK		0x3C
 #define SVREGSUBID	0x3D
 #define SVREGDLLID	0x3E
