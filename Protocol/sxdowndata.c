@@ -58,7 +58,7 @@ void AddCtemhuminfoList(u8 *buf)
 			printf("chum = %d.%d\r\n",sxdownloaddata.chum/10,sxdownloaddata.chum%10);
 			printf("clight = %d\r\n",sxdownloaddata.clight);
 			printf("co2   = %d\r\n",sxdownloaddata.co2);
-			printf("vol   = %d\r\n",sxdownloaddata.vol);
+			printf("vol   = %d.%d\r\n",sxdownloaddata.vol/10,sxdownloaddata.vol%10);
 		}
 
 	SXAddListInfo.IDList[CurrtWorkNum].Sensordata.chum=(buf[39]<<8)|buf[40];

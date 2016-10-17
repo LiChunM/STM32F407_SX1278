@@ -143,6 +143,7 @@ u8 AddSensorIDList(u8 mainid,u16 subid)
 }
 
 
+
 void sxsensoridinit(void)
 {
 	u8 i;

@@ -343,7 +343,7 @@ void UserSysCommad(u8 *buf)
 			printf("+hand %d\r\n",systemset.HandInter);
 			printf("+datamode %d\r\n",systemset.datamode);
 			printf("+jishih %d\r\n",jishih);
-			printf("+adcv %d\r\n",adcv/100,adcv%100);
+			printf("+adcv %d.%d\r\n",adcv/100,adcv%100);
 		
 		}
 	p=(u8*)strstr((const char*)buf,"$info-all");
@@ -360,7 +360,7 @@ void UserSysCommad(u8 *buf)
 			printf("+hand %d\r\n",systemset.HandInter);
 			printf("+datamode %d\r\n",systemset.datamode);
 			printf("+jishih %d\r\n",jishih);
-			printf("+adcv %d\r\n",adcv/100,adcv%100);
+			printf("+adcv %d.%d\r\n",adcv/100,adcv%100);
 			printf("+ATime[0] %d\r\n",systemset.ATime[0]);
 			printf("+ATime[1] %d\r\n",systemset.ATime[1]);
 			printf("+ATime[2] %d\r\n",systemset.ATime[2]);

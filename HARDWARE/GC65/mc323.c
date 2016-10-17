@@ -465,7 +465,11 @@ void DingTimeSendForData(void)
 								}
 						}
 				}
-			if(res)SystemFlow=1;
+			if(res)
+				{
+					IPCONNCET=ERROR;
+					SystemFlow=1;
+				}
 		}
 	
 }
