@@ -189,3 +189,62 @@ u8 waitsubsensorack(u16 time)
 	if(time==0)res=1;
 	return res;
 }
+
+
+u8 waitsubsensorackTest(u16 time)
+{
+	u8 res=0;
+	while(--time)	
+		{
+			delay_ms(10);
+			if(sxdownloaddata.sxreciveinfo&0x20)break;
+		}
+	sxdownloaddata.sxreciveinfo&=~(1<<5);
+	if(time==0)res=1;
+	return res;
+}
+
+u8 sxdowndataansysallTest(u8 *sxbuf)
+{
+	u8 i;
+	_calendar_obj tempcalendar;
+	if(sxbuf[10]==SXProtocoCHECKID)
+		{
+			if(sxbuf[15]==SXProtocoBEDATA)
+				{
+					
+					tempcalendar.w_year=Hex2Dec(sxbuf[18]);
+					tempcalendar.w_month=Hex2Dec(sxbuf[19]);
+					tempcalendar.w_date=Hex2Dec(sxbuf[20]);
+					tempcalendar.hour=Hex2Dec(sxbuf[21]);
+					tempcalendar.min=Hex2Dec(sxbuf[22]);
+					tempcalendar.sec=Hex2Dec(sxbuf[23]);
+					sxdownloaddata.sxdowndatainfo=Is_NeedCheckRtc(&tempcalendar);	
+					
+					sxdownloaddata.sxpacketssensorid=sxbuf[29];
+
+					sxdownloaddata.sxsensorcalendar.w_year=Hex2Dec(sxbuf[31]);
+					sxdownloaddata.sxsensorcalendar.w_month=Hex2Dec(sxbuf[32]);
+					sxdownloaddata.sxsensorcalendar.w_date=Hex2Dec(sxbuf[33]);
+					sxdownloaddata.sxsensorcalendar.hour=Hex2Dec(sxbuf[34]);
+					sxdownloaddata.sxsensorcalendar.min=Hex2Dec(sxbuf[35]);
+					if(sxdownloaddata.sxpacketssensorid==SUBSENSOR_C_TEMHUM)
+						{
+							AddCtemhuminfoList(sxbuf);
+							sxdownloaddata.sxreciveinfo|=1<<5;
+							
+						}
+					if(sxdownloaddata.sxpacketssensorid==SUBSENSORCO2)
+						{
+							AddCO2infoList(sxbuf);
+							
+						}
+					if(sxdownloaddata.sxpacketssensorid==SUBSENSOR_T_TEMHUM)
+						{
+							AddTtemhuminfoList(sxbuf);
+							
+						}
+				}
+		}
+}
+

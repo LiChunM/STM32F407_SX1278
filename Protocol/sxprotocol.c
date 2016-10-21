@@ -443,3 +443,67 @@ void RecevisensorData(void)
 		}
 }
 
+
+void CalcsensorDataTest(void)
+{
+	u8 i,j,res;
+	u8 length;
+	u8 wingtime=0;
+	for(CurrtWorkNum=0;CurrtWorkNum<SXAddListInfo.ListNum;CurrtWorkNum++)
+		{
+		
+			SXProtocolCheckDataInit(&length);
+			sxsendbuf(SXProtocolBuf,length);
+			if(SystemDebug==2)
+				{
+					printf(">>\r\n");
+					for(j=0;j<length;j++)printf("%02X",SXProtocolBuf[j]);
+					printf("\r\n");
+				}
+			res=waitsubsensorackTest(2000);
+		}
+}
+
+
+void RecevisensorDataTest(void)
+{
+	u8 res,i;
+	u8 BufferSize;
+	if(systemset.datamode==0)
+		{
+			if(systeminfo.SystemFlow==0)
+				{
+					res=Radio->Process();
+					if(res==RF_RX_DONE)
+					{
+						Radio->GetRxPacket(sxdatabuf, ( uint16_t* )&BufferSize );
+						if(SystemDebug==2)
+							{
+								printf("<<\r\n");
+								for(i=0;i<BufferSize;i++)printf("%02X",sxdatabuf[i]);
+								printf("\r\n");
+							}
+						sxdowndataansysallTest(sxdatabuf);
+						mymemset(sxdatabuf,0,BufferSize);
+						Radio->StartRx();
+					}
+				}
+		}
+	if(systemset.datamode==1)
+		{
+			RS485ONE_Receive_Data(sxdatabuf,&BufferSize);
+			if(BufferSize)
+				{
+					if(SystemDebug==2)
+						{
+							printf("<<\r\n");
+							for(i=0;i<BufferSize;i++)printf("%02X",sxdatabuf[i]);
+							printf("\r\n");
+						}
+					sxdowndataansysallTest(sxdatabuf);
+					mymemset(sxdatabuf,0,BufferSize);
+				}
+		}
+}
+
+

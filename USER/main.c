@@ -180,6 +180,10 @@ void qmsgshow_task(void *pdata)
 			{
 				RecevisensorData();
 			}
+		if(TestSensor)
+			{
+				RecevisensorDataTest();
+			}
 	}									 
 }
 
@@ -231,7 +235,7 @@ M35RESETPRO:
 					}
 				else
 					{
-						printf("Normal Work Begin.....\r\n");
+						printf("\r\nNormal Work Begin.....\r\n");
 						if(systemset.workmode==0)
 							{
 M35RESET:

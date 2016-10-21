@@ -42,9 +42,9 @@
 #define SVEOT			0x04
 
 
-#define SVWAVEPRO	21
-#define SVWAVEREG	22
-#define SVWAVEDLLREG	23
+#define SVWAVEPRO	0xEA
+#define SVWAVEREG	0xEB
+#define SVWAVEDLLREG	0xEC
 
 
 

@@ -105,6 +105,7 @@ void CalcsensorData(void);
 void RecevisensorData(void);
 u8 AddSensorIDList(u8 mainid,u16 subid);
 void LoadSenidFlash(void);
+void CalcsensorDataTest(void);
 #endif
 
 

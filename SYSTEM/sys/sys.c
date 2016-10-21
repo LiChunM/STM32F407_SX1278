@@ -18,7 +18,7 @@ tRadioDriver *Radio = NULL;
  _systeminfo systeminfo;
 //////////////////////////////////////////////////////////////////////////////////	 
 
-
+volatile u8 TestSensor=0;
 volatile u8 SystemDebug=0;
 volatile u8 SystemFlow=0;
 volatile u8 NeedForRtuTheData=0;
@@ -132,7 +132,7 @@ void SX1278_Parameter_Init(void)
 	sx1278data_read_para(&sx1278data);
 	if(sx1278data.saveflag!=0X0A)
 		{
-			sx1278data.modulepata.bdate=9600;
+			sx1278data.modulepata.bdate=1200;
 			sx1278data.modulepata.parity=0;
 			sx1278data.modulepata.customerid=0;
 			sx1278data.modulepata.netid=0;
@@ -455,7 +455,14 @@ void UserSysCommad(u8 *buf)
 			AddSensorIDList(res,idall&0xffff);
 			
 		}
-
+	s=(u8*)strstr((const char*)buf,"$checksensordata");
+	if(s!=NULL)
+		{
+			TestSensor=1;
+			CalcsensorDataTest();
+			TestSensor=0;
+			printf("\r\n+checksensordata ok\r\n");
+		}
 	s=(u8*)strstr((const char*)buf,"$clearsxsenid");
 	if(s!=NULL)
 		{

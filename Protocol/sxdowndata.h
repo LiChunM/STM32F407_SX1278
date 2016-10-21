@@ -28,6 +28,7 @@ typedef struct
 extern SXDowndata sxdownloaddata;
 
 u8 waitsubsensorack(u16 time);
+u8 sxdowndataansysallTest(u8 *sxbuf);
 
 #endif
 

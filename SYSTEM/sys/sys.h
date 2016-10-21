@@ -121,7 +121,7 @@ extern _system_setings	systemset;
 extern vu32 MyOSTime;
 extern u8 sxdatabuf[SINGNMAX];
 extern tRadioDriver *Radio ;
-
+extern volatile u8 TestSensor;
 //以下为汇编函数
 void WFI_SET(void);		//执行WFI指令
 void INTX_DISABLE(void);//关闭所有中断
